@@ -20,8 +20,10 @@ class Mario:
     images = pygame.transform.scale(images, (432, 1152))
     image_right = images
     image_left = pygame.transform.flip(images, True, False)
+    started_imageloop = False
 
     is_left = False
+    is_idle = False
 
     jumpcount = 0
     is_jump = False

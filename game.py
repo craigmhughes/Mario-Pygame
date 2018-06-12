@@ -12,6 +12,8 @@ pygame.display.set_caption("My Game")
 CLOCK = pygame.time.Clock()
 FPS = 60
 
+time_since_press = pygame.time.get_ticks()
+
 player = Characters.Mario
 
 # Main game loop
@@ -28,9 +30,11 @@ def gravity():
 
         player.jumpcount -= 1
         player.y -= (player.s * player.jumpcount) * 0.4
+        player.started_imageloop = False
         init_image_bounds(0, 0)
 
         if player.is_left:
+            player.started_imageloop = False
             init_image_bounds(8, 8)
 
     if player.y >= (winH - player.h):
@@ -38,15 +42,27 @@ def gravity():
         player.y = (winH - player.h)
         if player.image_y != 0:
             player.image_y = 0
+            player.started_imageloop = False
             init_image_bounds(0, 0)
+
+        if player.is_idle and not player.started_imageloop:
+            init_image_bounds(0, 8)
 
 
 def check_key(keys):
+    global time_since_press
+
+    if pygame.time.get_ticks() >= time_since_press + 5000 and not player.is_idle:
+        player.is_idle = True
+        player.started_imageloop = False
+        print(player.is_idle)
 
     if keys[pygame.K_LEFT] and player.x >= 0:
 
         player.is_left = True
         player.x = player.x - player.s
+        reset_idle()
+
         if player.images != player.image_left:
             player.images = player.image_left
 
@@ -54,6 +70,8 @@ def check_key(keys):
 
         player.is_left = False
         player.x = player.x + player.s
+        reset_idle()
+
         if player.images != player.image_right:
             player.images = player.image_right
 
@@ -61,17 +79,30 @@ def check_key(keys):
 
         player.image_y = 9
         player.jumpcount = 10
+        reset_idle()
 
     if keys[pygame.K_DOWN] and player.y >= (winH - player.h):
 
         player.image_y = 9
+        player.started_imageloop = False
         init_image_bounds(5, 5)
+        reset_idle()
+
         if player.is_left:
+            player.started_imageloop = False
             init_image_bounds(3, 3)
 
 
+def reset_idle():
+    global time_since_press
+    time_since_press = pygame.time.get_ticks()
+    player.started_imageloop = True
+    player.is_idle = False
+
+
 def init_image_bounds(start, end):
-    player.image_x = start
+    if not player.started_imageloop:
+        player.image_x = start
     player.image_start_bounds = start
     player.image_end_bounds = end
 
@@ -85,6 +116,7 @@ def run_through_images():
         # Reset image count based on boundary
         if player.image_x < player.image_end_bounds:
             player.image_x += 1
+            player.started_imageloop = True
         else:
             player.image_x = player.image_start_bounds
 
@@ -98,6 +130,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
 
     keys = pygame.key.get_pressed()
     gravity()
