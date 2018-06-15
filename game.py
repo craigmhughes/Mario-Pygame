@@ -53,23 +53,7 @@ def gravity():
                 player.started_imageloop = False
                 init_image_bounds(8, 8)
 
-    # Check top down collision with tiles
-    for index in current_world.level_one:
-        # if index.x <= (player.x + (player.w / 2)) <= (index.x + index.w + (player.w / 2)):
-        if player.x + 30 >= index.x and player.x <= (index.x + index.w):
-            #if index.y - player.h <= player.y <= (index.y + (player.h / 2)):
-            if player.y + player.h > index.y and player.y + (player.h / 2) < index.y - 20:
-
-                # Ground hit noise
-                if player.is_jump:
-                    pygame.mixer.Sound.play(sounds[1])
-
-                player.y = (index.y - player.h)
-                player.is_jump = False
-                player.collision[3] = True
-
-                if player.is_idle and not player.started_imageloop:
-                    init_image_bounds(0, 8)
+    check_bottom_bounds()
 
 
 def check_key(key):
@@ -147,34 +131,53 @@ def check_key(key):
 
 def check_side_bounds():
     for index in current_world.level_one:
-        # if player.y + (player.h /2) >= index.y and player.y + (player.h / 2) <= index.y + index.h:
-        if player.y + player.h > index.y - (player.w / 2) and player.y < index.y + index.h:
-            # Check right collision
-            if index.x <= player.x + player.w <= index.x:
-                player.collision[1] = True
-                player.collision[0] = False
-            # Check left
-            elif index.x + index.w + (player.w) >= player.x >= index.x + index.w:
-                player.collision[0] = True
-                player.collision[1] = False
+        for index in index:
+            if player.y + player.h > index.y - (player.w / 2) and player.y < index.y + index.h:
+                # Check right collision
+                if index.x <= player.x + player.w <= index.x:
+                    player.collision[1] = True
+                    player.collision[0] = False
+                # Check left
+                elif index.x + index.w + (player.w) >= player.x >= index.x + index.w:
+                    player.collision[0] = True
+                    player.collision[1] = False
+                else:
+                    reset_sides()
             else:
                 reset_sides()
-        else:
-            reset_sides()
 
 
 def check_top_bounds():
     for index in current_world.level_one:
-        # if index.y + index.h  <= player.y <= (index.y + index.h) :
-        if player.x + player.w >= index.x and player.x <= (index.x + index.w):
-            # Check down collision
-            if index.y + index.h + 10 > player.y >= index.y + index.h:
-                player.collision[2] = True
-                player.jumpcount = 0
+        for index in index:
+            if player.x + player.w >= index.x and player.x <= (index.x + index.w):
+                # Check down collision
+                if index.y + index.h + 20 > player.y >= index.y + index.h:
+                    player.collision[2] = True
+                    player.jumpcount = 0
+                else:
+                    player.collision[2] = False
             else:
                 player.collision[2] = False
-        else:
-            player.collision[2] = False
+
+
+def check_bottom_bounds():
+    # Check top down collision with tiles
+    for index in current_world.level_one:
+        for index in index:
+            if player.x + 30 >= index.x and player.x <= (index.x + index.w):
+                if player.y + player.h > index.y and player.y + (player.h / 2) < index.y - 20:
+
+                    # Ground hit noise
+                    if player.is_jump:
+                        pygame.mixer.Sound.play(sounds[1])
+
+                    player.y = (index.y - player.h)
+                    player.is_jump = False
+                    player.collision[3] = True
+
+                    if player.is_idle and not player.started_imageloop:
+                        init_image_bounds(0, 8)
 
 
 def reset_sides():
@@ -230,12 +233,13 @@ while run:
 
     # Show world objects -- TODO: Make this reusable, currently restricted to LEVEL ONE!
     for index in current_world.level_one:
-        if index.w > 32:
-            win.blit(index.background, (index.x, index.y),
-                     (index.image_x * 32, index.image_y * 32, index.w, index.h))
-        else:
-            win.blit(index.background, (index.x, index.y),
-                     (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
+        for index in index:
+            if index.w > 32:
+                win.blit(index.background, (index.x, index.y),
+                         (index.image_x * 32, index.image_y * 32, index.w, index.h))
+            else:
+                win.blit(index.background, (index.x, index.y),
+                         (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
 
     # Show Player
     win.blit(player.images, (player.x, player.y),

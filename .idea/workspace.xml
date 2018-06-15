@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1c227be-4833-4481-aa37-b67c992a236a" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/sprites/backgrounds/tiles/overworld-tiles.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/sprites/backgrounds/tiles/overworld-tiles.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects.py" beforeDir="false" afterPath="$PROJECT_DIR$/objects.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/worlds.py" beforeDir="false" afterPath="$PROJECT_DIR$/worlds.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,15 +15,15 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/FirstGame$game.coverage" NAME="game Coverage Results" MODIFIED="1529071051343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FirstGame$game.coverage" NAME="game Coverage Results" MODIFIED="1529074671701" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="game.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="172" column="36" selection-start-line="172" selection-start-column="36" selection-end-line="172" selection-end-column="36" />
+            <state relative-caret-position="270">
+              <caret line="142" column="30" lean-forward="true" selection-start-line="142" selection-start-column="30" selection-end-line="142" selection-end-column="30" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -35,8 +34,8 @@
       <file leaf-file-name="characters.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/characters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="28" column="36" selection-start-line="28" selection-start-column="36" selection-end-line="28" selection-end-column="36" />
+            <state relative-caret-position="272">
+              <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
             </state>
           </provider>
         </entry>
@@ -44,8 +43,8 @@
       <file leaf-file-name="worlds.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/worlds.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="45" selection-start-line="19" selection-start-column="45" selection-end-line="19" selection-end-column="45" />
+            <state relative-caret-position="340">
+              <caret line="20" column="32" lean-forward="true" selection-start-line="20" selection-start-column="32" selection-end-line="20" selection-end-column="32" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -53,7 +52,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="objects.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="objects.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/objects.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="340">
@@ -95,10 +94,10 @@
         <option value="$PROJECT_DIR$/Characters.py" />
         <option value="$PROJECT_DIR$/world.py" />
         <option value="$PROJECT_DIR$/tiles.py" />
-        <option value="$PROJECT_DIR$/characters.py" />
         <option value="$PROJECT_DIR$/objects.py" />
-        <option value="$PROJECT_DIR$/worlds.py" />
+        <option value="$PROJECT_DIR$/characters.py" />
         <option value="$PROJECT_DIR$/game.py" />
+        <option value="$PROJECT_DIR$/worlds.py" />
       </list>
     </option>
   </component>
@@ -459,8 +458,28 @@
     <entry file="file://$PROJECT_DIR$/tiles.py" />
     <entry file="file://$PROJECT_DIR$/characters.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="28" column="36" selection-start-line="28" selection-start-column="36" selection-end-line="28" selection-end-column="36" />
+        <state relative-caret-position="272">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="142" column="30" lean-forward="true" selection-start-line="142" selection-start-column="30" selection-end-line="142" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/worlds.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="32" lean-forward="true" selection-start-line="20" selection-start-column="32" selection-end-line="20" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -468,26 +487,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
           <caret line="20" column="16" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/worlds.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="45" selection-start-line="19" selection-start-column="45" selection-end-line="19" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="172" column="36" selection-start-line="172" selection-start-column="36" selection-end-line="172" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
