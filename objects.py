@@ -14,8 +14,11 @@ class tiles:
     background = pygame.image.load("assets/sprites/backgrounds/tiles/overworld-tiles.png")
     background = pygame.transform.scale2x(background)
 
-    def __init__(self, x, y, imgx, imgy):
+    # w & h are multiples of existing w & h variables
+    def __init__(self, x, y, w, h, imgx, imgy):
         self.x = x
         self.y = y
+        self.w *= w
+        self.h *= h
         self.image_x = imgx
         self.image_y = imgy

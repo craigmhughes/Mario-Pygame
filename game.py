@@ -31,27 +31,34 @@ pygame.mixer.music.load(music[0])
 run = True
 
 
-# pygame.mixer.music.play(1)
+#pygame.mixer.music.play(1)
 
 
 def gravity():
 
     player.y += player.s * 2
+    check_side_bounds()
+    check_top_bounds()
 
     if player.jumpcount > 0:
 
-        player.jumpcount -= 1
-        player.y -= (player.s * player.jumpcount) * 1.5
-        player.started_imageloop = False
-        init_image_bounds(0, 0)
+        player.jumpcount = 0 if player.collision[3] else player.jumpcount - 1
 
-        if player.is_left:
+        if not player.collision[2]:
+            player.y -= (player.s * player.jumpcount) * 1.5
             player.started_imageloop = False
-            init_image_bounds(8, 8)
+            init_image_bounds(0, 0)
 
+            if player.is_left:
+                player.started_imageloop = False
+                init_image_bounds(8, 8)
+
+    # Check top down collision with tiles
     for index in current_world.level_one:
-        if (index.x - (index.w / 2)) <= player.x <= (index.x + (index.w / 2)):
-            if player.y >= (index.y - player.h):
+        # if index.x <= (player.x + (player.w / 2)) <= (index.x + index.w + (player.w / 2)):
+        if player.x + 30 >= index.x and player.x <= (index.x + index.w):
+            #if index.y - player.h <= player.y <= (index.y + (player.h / 2)):
+            if player.y + player.h > index.y and player.y + (player.h / 2) < index.y - 20:
 
                 # Ground hit noise
                 if player.is_jump:
@@ -83,33 +90,35 @@ def check_key(key):
 
     if key[pygame.K_LEFT] and player.x >= 0:
 
-        if player.images != player.image_left:
-            player.images = player.image_left
+        if not player.collision[0]:
+            if player.images != player.image_left:
+                player.images = player.image_left
 
-        if (player.image_y != 3 or not player.is_left) and player.collision[3]:
-            player.started_imageloop = False
-            player.image_y = 3
-            init_image_bounds(2, 8)
-            player.is_walk = True
+            if (player.image_y != 3 or not player.is_left) and player.collision[3]:
+                player.started_imageloop = False
+                player.image_y = 3
+                init_image_bounds(2, 8)
+                player.is_walk = True
 
-        player.is_left = True
-        player.x -= (player.s * 2) if player.is_jump else player.s
-        reset_idle()
+            player.is_left = True
+            player.x -= (player.s * 2) if player.is_jump else player.s
+            reset_idle()
 
     if key[pygame.K_RIGHT] and player.x <= (winW - player.w):
 
-        if player.images != player.image_right:
-            player.images = player.image_right
+        if not player.collision[1]:
+            if player.images != player.image_right:
+                player.images = player.image_right
 
-        if (player.image_y != 3 or player.is_left) and player.collision[3]:
-            player.started_imageloop = False
-            player.image_y = 3
-            init_image_bounds(0, 6)
-            player.is_walk = True
+            if (player.image_y != 3 or player.is_left) and player.collision[3]:
+                player.started_imageloop = False
+                player.image_y = 3
+                init_image_bounds(0, 6)
+                player.is_walk = True
 
-        player.is_left = False
-        player.x += (player.s * 3) if player.is_jump else player.s
-        reset_idle()
+            player.is_left = False
+            player.x += (player.s * 2) if player.is_jump else player.s
+            reset_idle()
 
     if key[pygame.K_UP]:
 
@@ -134,6 +143,43 @@ def check_key(key):
             init_image_bounds(5, 5)
 
         reset_idle()
+
+
+def check_side_bounds():
+    for index in current_world.level_one:
+        # if player.y + (player.h /2) >= index.y and player.y + (player.h / 2) <= index.y + index.h:
+        if player.y + player.h > index.y - (player.w / 2) and player.y < index.y + index.h:
+            # Check right collision
+            if index.x <= player.x + player.w <= index.x:
+                player.collision[1] = True
+                player.collision[0] = False
+            # Check left
+            elif index.x + index.w + (player.w) >= player.x >= index.x + index.w:
+                player.collision[0] = True
+                player.collision[1] = False
+            else:
+                reset_sides()
+        else:
+            reset_sides()
+
+
+def check_top_bounds():
+    for index in current_world.level_one:
+        # if index.y + index.h  <= player.y <= (index.y + index.h) :
+        if player.x + player.w >= index.x and player.x <= (index.x + index.w):
+            # Check down collision
+            if index.y + index.h + 10 > player.y >= index.y + index.h:
+                player.collision[2] = True
+                player.jumpcount = 0
+            else:
+                player.collision[2] = False
+        else:
+            player.collision[2] = False
+
+
+def reset_sides():
+    player.collision[0] = False
+    player.collision[1] = False
 
 
 def reset_idle():
@@ -184,8 +230,12 @@ while run:
 
     # Show world objects -- TODO: Make this reusable, currently restricted to LEVEL ONE!
     for index in current_world.level_one:
-        win.blit(index.background, (index.x, index.y),
-                 (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
+        if index.w > 32:
+            win.blit(index.background, (index.x, index.y),
+                     (index.image_x * 32, index.image_y * 32, index.w, index.h))
+        else:
+            win.blit(index.background, (index.x, index.y),
+                     (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
 
     # Show Player
     win.blit(player.images, (player.x, player.y),
