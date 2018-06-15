@@ -14,15 +14,27 @@ class overWorld:
     background = pygame.image.load("assets/sprites/backgrounds/overworld.png")
 
     tile_w = objects.tiles.w
+    tile_h = objects.tiles.h
 
-    # Collection of objects which make up Scene/Level - TODO: Possibly convert to own class?
+    # Collection of objects which make up Scene/Level
     level_one = None
 
     def get_ground(self, stage):
 
+        b_bound = 568
+
         if stage == 1:
-            return [objects.tiles(self.tile_w * 0, 568, 4, 1, 0, 12), objects.tiles(self.tile_w * 4, 568, 4, 1, 0, 12),
-                    objects.tiles(self.tile_w * 8, 568, 4, 1, 0, 12), objects.tiles(self.tile_w * 12, 568, 1, 1, 8, 4), ]
+            return [objects.tiles(self.tile_w * 0, b_bound, 4, 1, 0, 12),
+                    objects.tiles(self.tile_w * 4, b_bound, 4, 1, 0, 12),
+                    objects.tiles(self.tile_w * 8, b_bound, 4, 1, 0, 12),
+                    objects.tiles(self.tile_w * 12, b_bound, 1, 1, 8, 4),
+
+                    # Hill Start
+                    objects.tiles(self.tile_w * 15, b_bound - (self.tile_h * 2), 2, 3, 5, 4),
+                    objects.tiles(self.tile_w * 17, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 19, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 21, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 23, b_bound - (self.tile_h * 2), 2, 3, 6, 4)]
 
     def get_objects(self, stage):
 

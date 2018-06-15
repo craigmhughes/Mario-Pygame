@@ -19,6 +19,9 @@ time_since_press = pygame.time.get_ticks()
 player = characters.mario()
 current_world = worlds.overWorld(winW, winH)
 
+# Player variables
+player_hit_camerabounds = False
+
 # Sounds
 sound_dir = "assets/sounds/fx/"
 sounds = [pygame.mixer.Sound(sound_dir + "player-jump.ogg"), pygame.mixer.Sound(sound_dir + "block-hit.ogg")]
@@ -101,7 +104,13 @@ def check_key(key):
                 player.is_walk = True
 
             player.is_left = False
-            player.x += (player.s * 2) if player.is_jump else player.s
+
+            if not player_hit_camerabounds:
+                player.x += (player.s * 2) if player.is_jump else player.s
+            else:
+                for index in current_world.level_one:
+                    for obj in index:
+                        obj.x -= (player.s * 2) if player.is_jump else player.s
             reset_idle()
 
     if key[pygame.K_UP]:
@@ -217,6 +226,8 @@ def run_through_images():
 while run:
     CLOCK.tick(FPS)
 
+    player_hit_camerabounds = player.x >= (winW / 2) - player.w
+
     # Check controls
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -234,7 +245,7 @@ while run:
     # Show world objects -- TODO: Make this reusable, currently restricted to LEVEL ONE!
     for index in current_world.level_one:
         for index in index:
-            if index.w > 32:
+            if index.w > 32 or index.h > 32:
                 win.blit(index.background, (index.x, index.y),
                          (index.image_x * 32, index.image_y * 32, index.w, index.h))
             else:
