@@ -16,6 +16,9 @@ class overWorld:
     tile_w = objects.tiles.w
     tile_h = objects.tiles.h
 
+    block_w = objects.blocks.w
+    block_h = objects.blocks.h
+
     # Collection of objects which make up Scene/Level
     level_one = None
 
@@ -39,7 +42,8 @@ class overWorld:
     def get_objects(self, stage):
 
         if stage == 1:
-            return [objects.tiles(self.tile_w * 0, 468, 4, 1, 4, 12)]
+            return [objects.blocks(self.block_w * 0, 400, 1, 1, 0, 0),
+                    objects.blocks(self.block_w * 1, 400, 1, 1, 0, 0)]
 
     def __init__(self, w, h):
         self.width = w

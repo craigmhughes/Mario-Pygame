@@ -3,7 +3,7 @@ import pygame
 
 class mario:
     # Player variables
-    x = 50
+    x = 100
     y = 400
     w = 48
     h = 64
