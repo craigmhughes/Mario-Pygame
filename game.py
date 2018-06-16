@@ -243,6 +243,21 @@ def run_through_images():
 
 def run_through_block_images(obj):
 
+    if pygame.time.get_ticks() > obj.image_time + 1:
+        if -5 <= obj.bump_count <= 0 and obj.is_hit:
+            obj.image_time = pygame.time.get_ticks()
+            obj.bump_count -= 1
+            obj.y -= 1
+
+    if pygame.time.get_ticks() > obj.image_time + 5:
+        if -12 < obj.bump_count < -5 and obj.is_hit:
+            obj.image_time = pygame.time.get_ticks()
+            obj.bump_count -= 1
+            obj.y += 1
+
+    if obj.bump_count <= -12 and obj.is_hit:
+        obj.bump_count = 0
+
     if pygame.time.get_ticks() > obj.image_time + 150:
         if obj.image_x >= obj.image_end_bounds:
             obj.image_time = pygame.time.get_ticks()
@@ -251,21 +266,6 @@ def run_through_block_images(obj):
             obj.image_time = pygame.time.get_ticks()
             obj.started_imageloop = True
             obj.image_x += 1
-
-    if pygame.time.get_ticks() > obj.image_time + 1:
-        if -10 <= obj.bump_count <= 0 and obj.is_hit:
-            obj.image_time = pygame.time.get_ticks()
-            obj.bump_count -= 1
-            obj.y -= 1
-
-    if pygame.time.get_ticks() > obj.image_time + 5:
-        if -22 < obj.bump_count < -10 and obj.is_hit:
-            obj.image_time = pygame.time.get_ticks()
-            obj.bump_count -= 1
-            obj.y += 1
-
-    if obj.bump_count <= -22 and obj.is_hit:
-        obj.bump_count = 0
 
 
 while run:
