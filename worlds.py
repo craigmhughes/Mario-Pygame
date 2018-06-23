@@ -52,8 +52,8 @@ class overWorld:
     def get_objects(self, stage):
 
         if stage == 1:
-            return [objects.blocks(self.block_w * 8, 430, 1, 1, 0, 0),
-                    objects.blocks(self.block_w * 9, 430, 1, 1, 0, 0)]
+            return [objects.blocks(self.block_w * 8, 430, 1, 1, 0, 0, "coin"),
+                    objects.blocks(self.block_w * 9, 430, 1, 1, 0, 0, "none")]
 
     def __init__(self, w, h):
         self.width = w

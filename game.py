@@ -294,10 +294,15 @@ def run_through_block_images(obj):
     if pygame.time.get_ticks() > obj.image_time + 15 and obj.bump_count > 10:
         obj.y -= 1
         obj.bump_count -= 1
+        # Lifts pickup out
+        if obj.pick_up is not None and not obj.pick_up.is_hit:
+            obj.pick_up.y -= 2.75 if obj.pick_up.type != "coin" else 4
 
     if pygame.time.get_ticks() > obj.image_time + 1 and 10 >= obj.bump_count > 0:
         obj.y += 1
         obj.bump_count -= 1
+        if obj.pick_up is not None:
+            obj.pick_up.is_hit = True
 
     # Only hit one block at a time
     if pygame.time.get_ticks() > obj.image_time + 1 and obj.bump_count == 1:
@@ -313,6 +318,19 @@ def run_through_block_images(obj):
             obj.image_time = pygame.time.get_ticks()
             obj.started_imageloop = True
             obj.image_x += 1
+
+        if obj.pick_up is not None:
+            pickup = obj.pick_up
+
+            if pickup.image_x >= pickup.image_end_bounds:
+                pickup.image_time = pygame.time.get_ticks()
+                pickup.image_x = pickup.image_start_bounds
+            else:
+                pickup.image_time = pygame.time.get_ticks()
+                pickup.started_imageloop = True
+                pickup.image_x += 1
+
+
 
 
 while run:
@@ -337,25 +355,37 @@ while run:
     # Show world objects -- TODO: Make this reusable, currently restricted to LEVEL ONE!
     for index in current_world.level_one:
         for index in index:
+
+            # Try needed as only blocks have type attr
+            try:
+                if index.block_type == "brick":
+
+                    # Render Pickups
+                    if index.pick_up is not None:
+                        pickup = index.pick_up
+                        pickup.x = index.x
+                        win.blit(pickup.background, (pickup.x, pickup.y),
+                                 (pickup.image_x * pickup.w, pickup.image_y * pickup.h, pickup.w, pickup.h))
+                        init_image_bounds(pickup, 0, 5)
+
+                    # Init animation for block else will continue animation
+                    if not index.started_imageloop:
+                        init_image_bounds(index, 0, 10)
+                        run_through_block_images(index)
+
+                    else:
+                        run_through_block_images(index)
+                        pass
+            except AttributeError:
+                pass
+
+            # Render objects here
             if index.w > 32 or index.h > 32:
                 win.blit(index.background, (index.x, index.y),
                          (index.image_x * 32, index.image_y * 32, index.w, index.h))
             else:
                 win.blit(index.background, (index.x, index.y),
                          (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
-
-            # Try needed as only blocks have type attr
-            try:
-                if index.block_type == "brick":
-                    # Init animation for block else will continue animation
-                    if not index.started_imageloop:
-                        init_image_bounds(index, 0, 10)
-                        run_through_block_images(index)
-                    else:
-                        run_through_block_images(index)
-                        pass
-            except AttributeError:
-                pass
 
     # Show Player
     win.blit(player.images, (player.x, player.y),
