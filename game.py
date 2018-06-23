@@ -1,4 +1,6 @@
 import pygame
+from pygame.rect import Rect
+
 import characters
 import worlds
 
@@ -18,11 +20,13 @@ time_since_press = pygame.time.get_ticks()
 # Objects
 player = characters.mario()
 current_world = worlds.overWorld(winW, winH)
+last_obj = current_world.level_one[0][len(current_world.level_one[0]) - 1]
 
 gravity_val = player.s * 2
 
 # Player variables
 player_hit_camerabounds = False
+block_hit = False
 
 # Sounds
 sound_dir = "assets/sounds/fx/"
@@ -43,7 +47,7 @@ def gravity():
 
     player.y += gravity_val
     check_side_bounds()
-    check_top_bounds()
+    check_bottom_bounds()
 
     if player.jumpcount > 0:
 
@@ -58,7 +62,7 @@ def gravity():
                 player.started_imageloop = False
                 init_image_bounds(player, 8, 8)
 
-    check_bottom_bounds()
+    check_top_bounds()
 
 
 def check_key(key):
@@ -69,7 +73,7 @@ def check_key(key):
         player.started_imageloop = False
         print(player.is_idle)
 
-    elif pygame.time.get_ticks() >= time_since_press + 100:
+    elif pygame.time.get_ticks() >= time_since_press + 100 or pygame.time.get_ticks() < player.last_jump + 300:
 
         if player.image_y != 0 and player.collision[3]:
             player.image_y = 0
@@ -90,7 +94,19 @@ def check_key(key):
                 player.is_walk = True
 
             player.is_left = True
-            player.x -= (player.s * 2) if player.is_jump else player.s
+
+            # Bases camera test on position of first ground block -- Make sure this is 0!
+            if current_world.level_one[0][0].x < 0:
+                # Check if last ground is in window and player is past camera clip
+                if last_obj.x <= winW + last_obj.w and player.x > winW / 2:
+                    player.x -= (player.s * 2) if player.is_jump else player.s
+                else:
+                    for index in current_world.level_one:
+                        for obj in index:
+                            obj.x += (player.s * 1.5) if player.is_jump else player.s
+            else:
+                player.x -= (player.s * 2) if player.is_jump else player.s
+
             reset_idle()
 
     if key[pygame.K_RIGHT] and player.x <= (winW - player.w):
@@ -107,7 +123,8 @@ def check_key(key):
 
             player.is_left = False
 
-            if not player_hit_camerabounds:
+
+            if not player_hit_camerabounds or last_obj.x <= winW - last_obj.w:
                 player.x += (player.s * 2) if player.is_jump else player.s
             else:
                 for index in current_world.level_one:
@@ -117,12 +134,14 @@ def check_key(key):
 
     if key[pygame.K_UP]:
 
-        if player.collision[3]:
+        # Check if player is touching a piece of ground and restricts jump times
+        if player.collision[3] and pygame.time.get_ticks() > player.last_jump + 300:
             pygame.mixer.Sound.play(sounds[0])
             player.image_y = 9
             player.image_x = 0
             player.jumpcount = 10
             player.is_jump = True
+            player.last_jump = pygame.time.get_ticks()
             player.collision[3] = False
 
         reset_idle()
@@ -140,16 +159,18 @@ def check_key(key):
         reset_idle()
 
 
+# COLLISION CHECKS ARE IN REFERENCE TO THE BLOCKS NOT THE PLAYER
+
 def check_side_bounds():
     for index in current_world.level_one:
         for index in index:
             if player.y + player.h > index.y - (player.w / 2) and player.y < index.y + index.h:
-                # Check right collision
-                if index.x <= player.x + player.w <= index.x:
+                # Check left collision
+                if index.x - 30 <= player.x + player.w < index.x:
                     player.collision[1] = True
                     player.collision[0] = False
-                # Check left
-                elif index.x + index.w + (player.w) >= player.x >= index.x + index.w:
+                # Check right
+                elif index.x + index.w < player.x < index.x + index.w + 5:
                     player.collision[0] = True
                     player.collision[1] = False
                 else:
@@ -158,24 +179,28 @@ def check_side_bounds():
                 reset_sides()
 
 
-def check_top_bounds():
+def check_bottom_bounds():
     # Check if hit bottom of tile
+    global block_hit
     for tiles in current_world.level_one:
         for index in tiles:
             if player.x + player.w >= index.x and player.x <= (index.x + index.w):
-                # Check down collision
                 if index.y + index.h + 20 > player.y >= index.y + index.h:
-                    player.collision[2] = True
-                    player.jumpcount = 0
-
+                    # Bumps block if is brick
                     try:
-                        if index.block_type == "brick":
-                            print(tiles.index(index))
+                        if index.block_type == "brick" and not index.is_hit and not block_hit and player.jumpcount != 0:
                             index.is_hit = True
+                            index.bump_count = 20
+                            block_hit = True
 
                     except AttributeError:
                         pass
 
+                    # Stop player jump if hit block
+                    player.collision[2] = True
+                    player.jumpcount = 0
+
+                # else is needed to reset states of player and block after hit
                 else:
                     player.collision[2] = False
                     try:
@@ -187,21 +212,27 @@ def check_top_bounds():
                 player.collision[2] = False
 
 
-def check_bottom_bounds():
-    # Check top collision with tiles
+def check_top_bounds():
+    # Check if is on top of tile
     for tiles in current_world.level_one:
         for index in tiles:
-            if player.x + 30 >= index.x and player.x <= (index.x + index.w):
+            if player.x + player.w / 2 >= index.x and player.x <= (index.x + index.w):
                 if player.y + player.h > index.y and player.y + (player.h / 2) < index.y - 20:
-
-                    # Ground hit noise
-                    if player.is_jump:
-                        pygame.mixer.Sound.play(sounds[1])
-
-                    player.y = (index.y - player.h)
-                    player.is_jump = False
                     player.collision[3] = True
 
+                    try:
+                        player.collision[3] = not index.is_hit
+                    except AttributeError:
+                        pass
+
+                    if player.collision[3]:
+                        # Ground hit noise
+                        if player.is_jump:
+                            pygame.mixer.Sound.play(sounds[1])
+                        player.y = (index.y - player.h)
+                        player.is_jump = False
+
+                    # Start idle
                     if player.is_idle and not player.started_imageloop:
                         init_image_bounds(player, 0, 8)
 
@@ -242,21 +273,21 @@ def run_through_images():
 
 
 def run_through_block_images(obj):
+    global block_hit
 
-    if pygame.time.get_ticks() > obj.image_time + 1:
-        if -5 <= obj.bump_count <= 0 and obj.is_hit:
-            obj.image_time = pygame.time.get_ticks()
-            obj.bump_count -= 1
-            obj.y -= 1
+    if pygame.time.get_ticks() > obj.image_time + 15 and obj.bump_count > 10:
+        obj.y -= 1
+        obj.bump_count -= 1
 
-    if pygame.time.get_ticks() > obj.image_time + 5:
-        if -12 < obj.bump_count < -5 and obj.is_hit:
-            obj.image_time = pygame.time.get_ticks()
-            obj.bump_count -= 1
-            obj.y += 1
+    if pygame.time.get_ticks() > obj.image_time + 1 and 10 >= obj.bump_count > 0:
+        obj.y += 1
+        obj.bump_count -= 1
 
-    if obj.bump_count <= -12 and obj.is_hit:
-        obj.bump_count = 0
+    # Only hit one block at a time
+    if pygame.time.get_ticks() > obj.image_time + 1 and obj.bump_count == 1:
+        obj.y += 1
+        obj.bump_count -= 1
+        block_hit = False
 
     if pygame.time.get_ticks() > obj.image_time + 150:
         if obj.image_x >= obj.image_end_bounds:
@@ -284,7 +315,6 @@ while run:
     check_key(keys)
     run_through_images()
 
-
     # Show world
     win.blit(current_world.background, (current_world.x, current_world.y))
 
@@ -307,6 +337,7 @@ while run:
                         run_through_block_images(index)
                     else:
                         run_through_block_images(index)
+                        pass
             except AttributeError:
                 pass
 

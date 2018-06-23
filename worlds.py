@@ -37,13 +37,23 @@ class overWorld:
                     objects.tiles(self.tile_w * 17, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
                     objects.tiles(self.tile_w * 19, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
                     objects.tiles(self.tile_w * 21, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
-                    objects.tiles(self.tile_w * 23, b_bound - (self.tile_h * 2), 2, 3, 6, 4)]
+                    objects.tiles(self.tile_w * 23, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+
+                    objects.tiles(self.tile_w * 26, b_bound - (self.tile_h * 2), 2, 3, 5, 4),
+                    objects.tiles(self.tile_w * 29, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 32, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 35, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 38, b_bound - (self.tile_h * 2), 2, 3, 6, 4)
+
+                    # Floater 1
+                    #objects.tiles(self.tile_w * 5, b_bound - (self.tile_h * 7), 2, 4, 5, 4),
+                    ]
 
     def get_objects(self, stage):
 
         if stage == 1:
-            return [objects.blocks(self.block_w * 0, 400, 1, 1, 0, 0),
-                    objects.blocks(self.block_w * 1, 400, 1, 1, 0, 0)]
+            return [objects.blocks(self.block_w * 8, 430, 1, 1, 0, 0),
+                    objects.blocks(self.block_w * 9, 430, 1, 1, 0, 0)]
 
     def __init__(self, w, h):
         self.width = w

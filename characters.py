@@ -29,7 +29,8 @@ class mario:
     # Collision - List goes: L R T B
     collision = [False, False, False, False]
 
-    used_doublejump = False
+    last_jump = 0
+
 
     jumpcount = 0
     is_jump = False
