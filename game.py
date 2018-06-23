@@ -123,7 +123,6 @@ def check_key(key):
 
             player.is_left = False
 
-
             if not player_hit_camerabounds or last_obj.x <= winW - last_obj.w:
                 player.x += (player.s * 2) if player.is_jump else player.s
             else:
@@ -182,15 +181,30 @@ def check_side_bounds():
 def check_bottom_bounds():
     # Check if hit bottom of tile
     global block_hit
+
     for tiles in current_world.level_one:
         for index in tiles:
+
             if player.x + player.w >= index.x and player.x <= (index.x + index.w):
                 if index.y + index.h + 20 > player.y >= index.y + index.h:
+
                     # Bumps block if is brick
                     try:
                         if index.block_type == "brick" and not index.is_hit and not block_hit and player.jumpcount != 0:
-                            index.is_hit = True
-                            index.bump_count = 20
+
+                            # Fixes Awkward offset of brick collision
+                            if tiles.index(index) + 1 <= len(tiles) - 1:
+                                adj_obj = tiles[tiles.index(index) + 1]
+                                if player.x + (player.w / 2) >= adj_obj.x:
+                                    adj_obj.is_hit = True
+                                    adj_obj.bump_count = 20
+                                else:
+                                    index.is_hit = True
+                                    index.bump_count = 20
+                            else:
+                                index.is_hit = True
+                                index.bump_count = 20
+
                             block_hit = True
 
                     except AttributeError:
@@ -216,8 +230,10 @@ def check_top_bounds():
     # Check if is on top of tile
     for tiles in current_world.level_one:
         for index in tiles:
+
             if player.x + player.w / 2 >= index.x and player.x <= (index.x + index.w):
                 if player.y + player.h > index.y and player.y + (player.h / 2) < index.y - 20:
+
                     player.collision[3] = True
 
                     try:

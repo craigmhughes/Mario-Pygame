@@ -43,6 +43,7 @@ class blocks:
     block_type = None
     is_broken = False
     is_hit = False
+    pickup = "None"
     bump_count = 0
 
     background = pygame.image.load("assets/sprites/backgrounds/tiles/object-tiles.png")

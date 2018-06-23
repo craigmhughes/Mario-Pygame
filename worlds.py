@@ -39,11 +39,11 @@ class overWorld:
                     objects.tiles(self.tile_w * 21, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
                     objects.tiles(self.tile_w * 23, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
 
-                    objects.tiles(self.tile_w * 26, b_bound - (self.tile_h * 2), 2, 3, 5, 4),
+                    objects.tiles(self.tile_w * 25, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 27, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
                     objects.tiles(self.tile_w * 29, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
-                    objects.tiles(self.tile_w * 32, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
-                    objects.tiles(self.tile_w * 35, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
-                    objects.tiles(self.tile_w * 38, b_bound - (self.tile_h * 2), 2, 3, 6, 4)
+                    objects.tiles(self.tile_w * 31, b_bound - (self.tile_h * 2), 2, 3, 6, 4),
+                    objects.tiles(self.tile_w * 33, b_bound - (self.tile_h * 2), 2, 3, 6, 4)
 
                     # Floater 1
                     #objects.tiles(self.tile_w * 5, b_bound - (self.tile_h * 7), 2, 4, 5, 4),
