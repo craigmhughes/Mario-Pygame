@@ -1,5 +1,6 @@
 import pygame
 import objects
+import characters
 
 
 class overWorld:
@@ -53,10 +54,17 @@ class overWorld:
 
         if stage == 1:
             return [objects.blocks(self.block_w * 8, 430, 1, 1, 0, 0, "coin"),
-                    objects.blocks(self.block_w * 9, 430, 1, 1, 0, 0, "none")]
+                    objects.blocks(self.block_w * 9, 430, 1, 1, 0, 0, "none"),
+                    objects.blocks(self.block_w * 10, 430, 1, 1, 11, 0, "shroom-0"),
+                    objects.blocks(self.block_w * 11, 430, 1, 1, 0, 0, "none")]
+
+    def get_enemies(self, stage):
+        if stage == 1:
+            return [characters.enemy("turtle", 150, 400, None),
+                    characters.enemy("turtle", 650, 350, None)]
 
     def __init__(self, w, h):
         self.width = w
         self.height = h
         self.background = pygame.transform.scale(self.background, (w, h))
-        self.level_one = [self.get_ground(1), self.get_objects(1)]
+        self.level_one = [self.get_ground(1), self.get_objects(1), self.get_enemies(1)]

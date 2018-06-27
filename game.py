@@ -42,12 +42,27 @@ run = True
 
 #pygame.mixer.music.play(1)
 
+# ////////////  START SETUP
+def setup():
+    for enemy in current_world.level_one[2]:
+        enemy.world = current_world.level_one
+        enemy.player = player
+# ////////////  END SETUP
 
+
+# ////////////  START GRAVITY
 def gravity():
 
     player.y += gravity_val
-    check_side_bounds()
-    check_bottom_bounds()
+
+    for enemy in current_world.level_one[2]:
+        enemy.y += gravity_val
+        check_side_bounds(enemy)
+        check_bottom_bounds(enemy)
+        enemy.ai()
+
+    check_side_bounds(player)
+    check_bottom_bounds(player)
 
     if player.jumpcount > 0:
 
@@ -62,8 +77,14 @@ def gravity():
                 player.started_imageloop = False
                 init_image_bounds(player, 8, 8)
 
-    check_top_bounds()
+    check_top_bounds(player)
+    for enemy in current_world.level_one[2]:
+        check_top_bounds(enemy)
 
+# ////////////  END GRAVITY
+
+
+# ////////////  START KEY CHECK
 
 def check_key(key):
     global time_since_press
@@ -135,7 +156,7 @@ def check_key(key):
 
         # Check if player is touching a piece of ground and restricts jump times
         if player.collision[3] and pygame.time.get_ticks() > player.last_jump + 300:
-            pygame.mixer.Sound.play(sounds[0])
+            #pygame.mixer.Sound.play(sounds[0])
             player.image_y = 9
             player.image_x = 0
             player.jumpcount = 10
@@ -157,28 +178,40 @@ def check_key(key):
 
         reset_idle()
 
+# ////////////  END KEY CHECK
+
+
+# ////////////  START COLLISION CHECK
 
 # COLLISION CHECKS ARE IN REFERENCE TO THE BLOCKS NOT THE PLAYER
-
-def check_side_bounds():
+def check_side_bounds(player):
     for index in current_world.level_one:
         for index in index:
-            if player.y + player.h > index.y - (player.w / 2) and player.y < index.y + index.h:
+            if player.y + player.h - 30 > index.y - (player.w / 2) and player.y < index.y + index.h:
                 # Check left collision
-                if index.x - 30 <= player.x + player.w < index.x:
+                if index.x - 100 <= player.x + player.w < index.x:
                     player.collision[1] = True
                     player.collision[0] = False
                 # Check right
-                elif index.x + index.w < player.x < index.x + index.w + 5:
+                elif index.x + index.w - 30 < player.x < index.x + index.w + 5:
                     player.collision[0] = True
                     player.collision[1] = False
                 else:
                     reset_sides()
+
+                # if is enemy, do not clip
+                try:
+                    if index.enemy_type is not None:
+                        player.collision[0] = False
+                        player.collision[1] = False
+                except AttributeError:
+                    pass
+
             else:
                 reset_sides()
 
 
-def check_bottom_bounds():
+def check_bottom_bounds(player):
     # Check if hit bottom of tile
     global block_hit
 
@@ -190,8 +223,7 @@ def check_bottom_bounds():
 
                     # Bumps block if is brick
                     try:
-                        if index.block_type == "brick" and not index.is_hit and not block_hit and player.jumpcount != 0:
-
+                        if (index.block_type == "brick" or index.block_type == "question") and not index.is_hit and not block_hit and player.jumpcount != 0:
                             # Fixes Awkward offset of brick collision
                             if tiles.index(index) + 1 <= len(tiles) - 1:
                                 adj_obj = tiles[tiles.index(index) + 1]
@@ -218,7 +250,7 @@ def check_bottom_bounds():
                 else:
                     player.collision[2] = False
                     try:
-                        if index.block_type == "brick" and index.bump_count == 0:
+                        if (index.block_type == "brick" or index.block_type == "question") and index.bump_count == 0:
                             index.is_hit = False
                     except AttributeError:
                         pass
@@ -226,7 +258,7 @@ def check_bottom_bounds():
                 player.collision[2] = False
 
 
-def check_top_bounds():
+def check_top_bounds(player):
     # Check if is on top of tile
     for tiles in current_world.level_one:
         for index in tiles:
@@ -235,6 +267,12 @@ def check_top_bounds():
                 if player.y + player.h > index.y and player.y + (player.h / 2) < index.y - 20:
 
                     player.collision[3] = True
+                    # if is enemy, do not clip
+                    try:
+                        if index.enemy_type is not None:
+                            player.collision[3] = False
+                    except AttributeError:
+                        pass
 
                     try:
                         player.collision[3] = not index.is_hit
@@ -243,14 +281,16 @@ def check_top_bounds():
 
                     if player.collision[3]:
                         # Ground hit noise
-                        if player.is_jump:
-                            pygame.mixer.Sound.play(sounds[1])
+                        #if player.is_jump:
+                            #pygame.mixer.Sound.play(sounds[1])
                         player.y = (index.y - player.h)
                         player.is_jump = False
 
                     # Start idle
                     if player.is_idle and not player.started_imageloop:
                         init_image_bounds(player, 0, 8)
+
+# ////////////  END COLLISION CHECK
 
 
 def reset_sides():
@@ -272,7 +312,8 @@ def init_image_bounds(obj, start, end):
     obj.image_end_bounds = end
 
 
-def run_through_images():
+# ////////////  START PLAYER IMAGES
+def run_through_player_images():
 
     # Increment imageCounts per Sec
     if pygame.time.get_ticks() > player.image_time + 1000 or \
@@ -287,7 +328,10 @@ def run_through_images():
             player.started_imageloop = True
             player.image_x += 1
 
+# ////////////  END PLAYER IMAGES
 
+
+# ////////////  START BLOCK IMAGES
 def run_through_block_images(obj):
     global block_hit
 
@@ -296,7 +340,7 @@ def run_through_block_images(obj):
         obj.bump_count -= 1
         # Lifts pickup out
         if obj.pick_up is not None and not obj.pick_up.is_hit:
-            obj.pick_up.y -= 2.75 if obj.pick_up.type != "coin" else 4
+            obj.pick_up.y -= 4
 
     if pygame.time.get_ticks() > obj.image_time + 1 and 10 >= obj.bump_count > 0:
         obj.y += 1
@@ -330,8 +374,77 @@ def run_through_block_images(obj):
                 pickup.started_imageloop = True
                 pickup.image_x += 1
 
+# ////////////  END BLOCK IMAGES
 
 
+# ////////////  START RENDER WORLD
+def render_world():
+    # Show world
+    win.blit(current_world.background, (current_world.x, current_world.y))
+
+    # Show world objects -- TODO: Make this reusable, currently restricted to LEVEL ONE!
+    for i in current_world.level_one:
+        if current_world.level_one.index(i) != 2:
+            for index in i:
+                # Try needed as only brick and question blocks have type attr
+                try:
+                    if index.block_type == "brick" or index.block_type == "question":
+
+                        # Render Pickups
+                        if index.pick_up is not None:
+                            pickup = index.pick_up
+                            pickup.x = index.x
+                            win.blit(pickup.background, (pickup.x, pickup.y),
+                                     (pickup.image_x * pickup.w, pickup.image_y * pickup.h, pickup.w, pickup.h))
+
+                            if pickup.x < player.x < pickup.x + pickup.w and player.y + player.h / 2 > pickup.y and player.y < pickup.y + pickup.h:
+
+                                if pickup.type == "coin":
+                                    player.coin_count += 1
+
+                                index.pick_up = None
+
+                            if pickup.type == "coin":
+                                init_image_bounds(pickup, 0, 5)
+
+                            if pickup.type == "shroom-0":
+                                init_image_bounds(pickup, 0, 9)
+
+                        # Init animation for block else will continue animation
+                        if not index.started_imageloop:
+                            # if index.pick_up is not None:
+                            #     init_image_bounds(index, 0, 10)
+                            # else:
+                            if index.block_type == "brick":
+                                init_image_bounds(index, 0, 1)
+                            else:
+                                init_image_bounds(index, 11, 11)
+                            run_through_block_images(index)
+
+                        else:
+                            run_through_block_images(index)
+                            pass
+                except AttributeError:
+                    pass
+                if index.x + index.w > -5 and index.x < winW:
+                    # Render objects here
+                    if index.w > 32 or index.h > 32:
+                        win.blit(index.background, (index.x, index.y),
+                                 (index.image_x * 32, index.image_y * 32, index.w, index.h))
+                    else:
+                        win.blit(index.background, (index.x, index.y),
+                                 (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
+        else:
+            # Render enemies here
+            for enemy in i:
+                if enemy.x + enemy.w > -5 and enemy.x < winW:
+                    win.blit(enemy.images, (enemy.x, enemy.y),
+                             (enemy.image_x * enemy.w, enemy.image_y * enemy.h, enemy.w, enemy.h))
+
+
+# ////////////  END RENDER WORLD
+
+setup()
 
 while run:
     CLOCK.tick(FPS)
@@ -345,47 +458,11 @@ while run:
 
     keys = pygame.key.get_pressed()
 
+    render_world()
+
     gravity()
     check_key(keys)
-    run_through_images()
-
-    # Show world
-    win.blit(current_world.background, (current_world.x, current_world.y))
-
-    # Show world objects -- TODO: Make this reusable, currently restricted to LEVEL ONE!
-    for index in current_world.level_one:
-        for index in index:
-
-            # Try needed as only blocks have type attr
-            try:
-                if index.block_type == "brick":
-
-                    # Render Pickups
-                    if index.pick_up is not None:
-                        pickup = index.pick_up
-                        pickup.x = index.x
-                        win.blit(pickup.background, (pickup.x, pickup.y),
-                                 (pickup.image_x * pickup.w, pickup.image_y * pickup.h, pickup.w, pickup.h))
-                        init_image_bounds(pickup, 0, 5)
-
-                    # Init animation for block else will continue animation
-                    if not index.started_imageloop:
-                        init_image_bounds(index, 0, 10)
-                        run_through_block_images(index)
-
-                    else:
-                        run_through_block_images(index)
-                        pass
-            except AttributeError:
-                pass
-
-            # Render objects here
-            if index.w > 32 or index.h > 32:
-                win.blit(index.background, (index.x, index.y),
-                         (index.image_x * 32, index.image_y * 32, index.w, index.h))
-            else:
-                win.blit(index.background, (index.x, index.y),
-                         (index.image_x * index.w, index.image_y * index.h, index.w, index.h))
+    run_through_player_images()
 
     # Show Player
     win.blit(player.images, (player.x, player.y),

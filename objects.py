@@ -60,6 +60,9 @@ class blocks:
         if imgx == 0:
             self.block_type = "brick"
 
+        if imgx == 11:
+            self.block_type = "question"
+
 
 class pickup:
     x = 0
@@ -89,7 +92,7 @@ class pickup:
         if p_type == "shroom-0":
             self.type = p_type
             self.image_x = 0
-            self.image_y = 1
+            self.image_y = 3
         if p_type == "shroom-1":
             self.type = p_type
             self.image_x = 1
